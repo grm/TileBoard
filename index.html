@@ -38,7 +38,8 @@
 
       [
          'scripts/vendors/angular.min.js',
-         'scripts/vendors/angular-long-press.js',
+         'scripts/vendors/hammer.js',
+         'scripts/vendors/angular.hammer.js',
          'scripts/vendors/color-picker.js',
 
          'scripts/models/api.js',
@@ -60,7 +61,10 @@
 
 <body ng-controller="Main" ng-class="getBodyClass()">
 
-<div ng-if="ready" class="page-container">
+<div ng-if="ready" class="page-container"
+     hm-swipe="onPageSwipe($event)"
+     hm-recognizer-options="{directions: isMenuOnTheLeft ? 'DIRECTION_VERTICAL' : 'DIRECTION_HORIZONTAL'}"
+>
    <div class="camera-popup"
         ng-if="activeCamera && (entity = getItemEntity(activeCamera))">
 
@@ -280,7 +284,7 @@
       <div ng-repeat="page in pages track by $index"
            ng-class="{'-active': isPageActive(page)}"
            ng-if="shouldDrawPage(page) && !isHidden(page)"
-           ng-style="pageStyles(page)" class="page"
+           ng-style="pageStyles(page, $index)" class="page"
            on-scroll on-scroll-model="page">
 
          <!-- legacy -->
@@ -444,7 +448,8 @@
 <script type="text/ng-template" id="tile.html">
    <div ng-style="itemStyles(page, item, entity)" class="item"
         ng-click="entityClick(page, item, entity)"
-        on-long-press="entityLongClick($event, page, item, entity)"
+        hm-press="entityLongClick($event, page, item, entity)"
+        hm-recognizer-options="{time: 600}"
         ng-if="(entity = getItemEntity(item)) && !isHidden(item, entity)"
         ng-class="itemClasses(item)">
 
@@ -914,7 +919,7 @@
             </div>
 
             <div class="weather-line" ng-repeat="line in item.fields.list">
-               <span ng-bind="getWeatherLine(line, item. entity)"></span>
+               <span ng-bind="getWeatherLine(line, item, entity)"></span>
             </div>
 
             <!-- DEPRECATED -->
@@ -1006,9 +1011,9 @@
                <span ng-if="(_unit = entityUnit(item, entity))"
                      class="item-climate--target--unit" ng-bind="_unit"></span>
             </div>
-            <div class="item-climate--mode" ng-if="entity.attributes.operation_mode"
+            <div class="item-climate--mode" ng-if="entity.attributes.preset_mode"
                  ng-click="openSelect(item)">
-               <span ng-bind="entity.attributes.operation_mode"></span>
+               <span ng-bind="entity.attributes.preset_mode"></span>
             </div>
          </div>
 
@@ -1016,7 +1021,7 @@
               ng-style="itemSelectStyles(entity, entity.attributes.operation_list)">
 
             <div class="item-select--option"
-                 ng-repeat="option in entity.attributes.operation_list track by $index"
+                 ng-repeat="option in entity.attributes.preset_modes track by $index"
                  ng-class="{'-active': option === entity.state}"
                  ng-click="setClimateOption($event, item, entity, option)">
                <span ng-bind="option"></span>
@@ -1157,7 +1162,7 @@
 
 
 <link rel="stylesheet" async
-      href="https://cdn.materialdesignicons.com/3.3.92/css/materialdesignicons.min.css">
+      href="https://cdn.materialdesignicons.com/3.8.95/css/materialdesignicons.min.css">
 
 </body>
 </html>
