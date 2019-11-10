@@ -12,10 +12,14 @@
 
    <title>TileBoard</title>
 
+   <!-- WebApp configuration -->
+   <link rel="manifest" href="manifest.webmanifest" crossorigin="use-credentials">
+   <!-- legacy tags -->
    <meta name="mobile-web-app-capable" content="yes">
    <!-- iOS Settings -->
    <meta name="apple-mobile-web-app-capable" content="yes">
    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+   <link rel="apple-touch-icon" href="favicon.png">
 
    <link rel="shortcut icon" sizes="16x16 24x24 32x32 48x48 64x64" href="favicon.png">
 
@@ -41,14 +45,15 @@
          'scripts/vendors/hammer.js',
          'scripts/vendors/angular.hammer.js',
          'scripts/vendors/color-picker.js',
+         'scripts/vendors/angularjs-gauge.js',
 
-         'scripts/models/api.js',
          'scripts/models/noty.js',
          'scripts/app.js',
 
          'config.js', // <----- NOT config.example.js !!
 
          'scripts/init.js',
+         'scripts/models/api.js',
          'scripts/directives.js',
          'scripts/controllers/main.js',
          'scripts/controllers/noty.js',
@@ -448,7 +453,7 @@
 <script type="text/ng-template" id="tile.html">
    <div ng-style="itemStyles(page, item, entity)" class="item"
         ng-click="entityClick(page, item, entity)"
-        hm-press="entityLongClick($event, page, item, entity)"
+        hm-press="entityLongPress($event, page, item, entity)"
         hm-recognizer-options="{time: 600}"
         ng-if="(entity = getItemEntity(item)) && !isHidden(item, entity)"
         ng-class="itemClasses(item)">
@@ -655,11 +660,13 @@
 
          <div ng-if="!item.controlsEnabled">
             <div ng-if="entity.state !== 'off'">
-               <div class="item-button -center-right"
+               <div ng-if="supportsFeature(FEATURES.LIGHT.BRIGHTNESS, entity)"
+                    class="item-button -center-right"
                     ng-click="increaseBrightness($event, item, entity)">
                   <i class="mdi mdi-plus"></i>
                </div>
-               <div class="item-button -bottom-right"
+               <div ng-if="supportsFeature(FEATURES.LIGHT.BRIGHTNESS, entity)"
+                    class="item-button -bottom-right"
                     ng-click="decreaseBrightness($event, item, entity)">
                   <i class="mdi mdi-minus"></i>
                </div>
@@ -957,8 +964,10 @@
                   <th>
                      <span ng-bind="itemField('dateTitle', item, entity) || 'Date'"></span>
                   </th>
-                  <th></th>
-                  <th>
+                  <th class="weather-list-header--icon">
+                     <span ng-bind="itemField('iconTitle', item, entity)"></span>
+                  </th>
+                  <th class="weather-list-header--primary">
                      <span ng-bind="itemField('primaryTitle', item, entity) || 'Forecast'"></span>
                   </th>
                   <th class="weather-list-header--secondary">
@@ -1154,6 +1163,28 @@
                  ng-click="setSourcePlayer($event, item, entity, option)">
                <span ng-bind="option"></span>
             </div>
+         </div>
+      </div>
+
+      <div ng-if="item.type === TYPES.GAUGE"
+         class="item-entity-container">         
+         <div class="item-gauge">
+            <ng-gauge size="getGaugeField('size', item, entity)" 
+                      type="getGaugeField('type', item, entity)" 
+                      thick="getGaugeField('thick', item, entity)" 
+                      min="getGaugeField('min', item, entity)" 
+                      max="getGaugeField('max', item, entity)" 
+                      value="entityValue(item, entity)" 
+                      cap="getGaugeField('cap', item, entity)" 
+                      label="getGaugeField('label', item, entity)" 
+                      prepend="getGaugeField('prepend', item, entity)"
+                      foreground-color="getGaugeField('foregroundColor', item, entity)" 
+                      background-color="getGaugeField('backgroundColor', item, entity)" 
+                      append="getGaugeField('append', item, entity)" 
+                      thresholds="getGaugeField('thresholds', item, entity)" 
+                      label-only="getGaugeField('labelOnly', item, entity)"
+                      duration="getGaugeField('duration', item, entity)" 
+                      fraction-size="getGaugeField('fractionSize', item, entity)"></ng-gauge>
          </div>
       </div>
    </div>

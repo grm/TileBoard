@@ -965,6 +965,9 @@ body {
   background-size: cover;
   background-position: center;
 }
+.item-gauge {
+  padding-top: 10px;
+}
 .clock div,
 clock div {
   display: inline-block;
@@ -1480,6 +1483,12 @@ camera-thumbnail div {
 }
 .weather-list-header {
   opacity: 0.5;
+}
+.weather-list-header--icon {
+  text-align: center;
+}
+.weather-list-header--primary {
+  text-align: left;
 }
 .weather-list-header--secondary {
   text-align: right;
